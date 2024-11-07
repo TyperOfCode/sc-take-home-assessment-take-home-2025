@@ -16,6 +16,11 @@ type IDriver interface {
 	MoveFolder(name string, dst string) ([]Folder, error)
 }
 
+type FolderNode struct {
+	Folder   *Folder
+	Children []*FolderNode
+}
+
 type driver struct {
 	folderNames []string
 	nameToNode  map[string]*FolderNode

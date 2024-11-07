@@ -2,11 +2,6 @@ package folder
 
 import "strings"
 
-type FolderNode struct {
-	Folder   *Folder
-	Children []*FolderNode
-}
-
 func BuildFolderTree(folders []Folder, nameOfFolders []string) (map[string]*FolderNode, error) {
 	nameToNode := make(map[string]*FolderNode)
 
