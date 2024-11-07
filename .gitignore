@@ -1,0 +1,22 @@
+## Go
+*.out
+vendor/
+*.a
+*.o
+*.so
+
+## settings
+.vscode/
+.history/
+.idea/
+.golangci.yml
+
+vendor/
+Godeps/
+
+*.log
+
+
+## os
+.DS_Store
+Thumbs.db
