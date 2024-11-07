@@ -22,6 +22,8 @@ func Test_folder_GetFoldersByOrgID(t *testing.T) {
 		folders []folder.Folder
 		expect  []folder.Folder
 	}{
+
+		//-------- non-error cases
 		{
 			name:    "Empty folders.",
 			orgID:   orgIdToFetch,
@@ -120,6 +122,8 @@ func Test_folder_GetAllChildFolders(t *testing.T) {
 		expect      []folder.Folder
 		expectError bool
 	}{
+
+		//-------- non-error cases
 
 		{
 			testName:   "No children of the folder.",
@@ -267,7 +271,7 @@ func Test_folder_GetAllChildFolders(t *testing.T) {
 			expectError: false,
 		},
 
-		// errorful behaviour tests
+		//-------- errorful behaviour tests
 		{
 			testName:    "Error on empty folders.",
 			orgID:       orgIdToFetch,
