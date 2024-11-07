@@ -1,19 +1,8 @@
 package folder
 
 import (
-	"errors"
 	"strings"
 )
-
-// errors
-var ErrInvalidArguments = errors.New("empty folder name in source or destination")
-var ErrMoveToSource = errors.New("cannot move a folder to itself")
-var ErrMoveToDescendant = errors.New("cannot move a folder to its descendant")
-var ErrMoveToDifferentOrg = errors.New("cannot move a folder to a different organization")
-
-var ErrSourceDoesNotExist = errors.New("source folder doesn't exist")
-var ErrDestDoesNotExist = errors.New("destination folder doesn't exist")
-
 
 func (f *driver) MoveFolder(
 	name string,
@@ -55,7 +44,7 @@ func (f *driver) MoveFolder(
 	for _, names := range f.folderNames {
 		node, ok := f.nameToNode[names]
 		if !ok {
-			continue
+			return nil, ErrUnexpectedError
 		}
 
 		folder := *node.Folder

@@ -1,31 +1,31 @@
 package folder
 
 import (
-	"errors"
-
 	"github.com/gofrs/uuid"
 )
 
-// errors
-var ErrFolderDoesNotExist = errors.New("folder doesn't exist")
-var ErrFolderDoesNotExistInOrg = errors.New("folder doesn't exist in the specified organization")
 
 func GetAllFolders() []Folder {
 	return GetSampleData()
 }
 
-func (f *driver) GetFoldersByOrgID(orgID uuid.UUID) []Folder {
+func (f *driver) GetFoldersByOrgID(orgID uuid.UUID) ([]Folder, error) {
 
 	res := []Folder{}
 	for _, names := range f.folderNames {
-		f := f.nameToNode[names].Folder
+		node, ok := f.nameToNode[names]
+		if !ok {
+			return nil, ErrUnexpectedError
+		}
+
+		f := node.Folder
 
 		if f.OrgId == orgID {
 			res = append(res, *f)
 		}
 	}
 
-	return res
+	return res, nil
 
 }
 

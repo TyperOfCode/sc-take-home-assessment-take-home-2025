@@ -101,8 +101,9 @@ func Test_folder_GetFoldersByOrgID(t *testing.T) {
 
 			f := folder.NewDriver(tc.folders)
 
-			result := f.GetFoldersByOrgID(tc.orgID)
+			result, err := f.GetFoldersByOrgID(tc.orgID)
 
+			assert.NoError(t, err, "unexpected error")
 			assert.Equal(t, tc.expect, result, "unexpected result")
 		})
 	}

@@ -4,7 +4,7 @@ import "github.com/gofrs/uuid"
 
 type IDriver interface {
 	// GetFoldersByOrgID returns all folders that belong to a specific orgID.
-	GetFoldersByOrgID(orgID uuid.UUID) []Folder
+	GetFoldersByOrgID(orgID uuid.UUID) ([]Folder, error)
 	// component 1
 	// Implement the following methods:
 	// GetAllChildFolders returns all child folders of a specific folder.
