@@ -34,13 +34,14 @@ func (d *driver) MoveFolder(
 		return nil, ErrMoveToDifferentOrg
 	}
 
-	if strings.HasPrefix(dstFolder.Paths, srcFolder.Paths) {
+	if isDescendant(srcFolder.Paths, dstFolder.Paths) {
 		return nil, ErrMoveToDescendant
 	}
 
 	// Copy all the folders and update the necessary paths.
 	// O(n) complexity as we have to return a copy of all the folders anyway.
 	res := []Folder{}
+	newPrefix := dstFolder.Paths + "." + srcFolder.Name
 	for _, names := range d.folderNames {
 		node, ok := d.nameToNode[names]
 		if !ok {
@@ -50,13 +51,34 @@ func (d *driver) MoveFolder(
 		folder := *node.Folder
 
 		if folder.Paths == srcFolder.Paths {
-			folder.Paths = dstFolder.Paths + "." + folder.Name
-		} else if strings.HasPrefix(folder.Paths, srcFolder.Paths) {
-			folder.Paths = dstFolder.Paths + "." + srcFolder.Name + folder.Paths[len(srcFolder.Paths):]
+			folder.Paths = newPrefix
+		} else if isDescendant(srcFolder.Paths, folder.Paths) {
+			folder.Paths = newPrefix + folder.Paths[len(srcFolder.Paths):]
 		}
 
 		res = append(res, folder)
 	}
 
 	return res, nil
+}
+
+func isDescendant(
+	parentPath string,
+	childPath string,
+) bool {
+	parentSegments := strings.Split(parentPath, ".")
+	childSegments := strings.Split(childPath, ".")
+
+	if len(childSegments) <= len(parentSegments) {
+		return false
+	}
+
+	// checks if parent path is a prefix of the child path
+	for i, segment := range parentSegments {
+		if segment != childSegments[i] {
+			return false
+		}
+	}
+
+	return true
 }
