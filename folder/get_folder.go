@@ -9,7 +9,7 @@ func GetAllFolders() []Folder {
 }
 
 func (d *driver) GetFoldersByOrgID(orgID uuid.UUID) ([]Folder, error) {
-	
+
 	res := []Folder{}
 	for _, names := range d.folderNames {
 		node, ok := d.nameToNode[names]
@@ -31,11 +31,12 @@ func (d *driver) GetFoldersByOrgID(orgID uuid.UUID) ([]Folder, error) {
 func (d *driver) GetAllChildFolders(orgID uuid.UUID, name string) ([]Folder, error) {
 
 	node, folderExists := d.nameToNode[name]
-	folder := node.Folder
 
 	if !folderExists {
 		return nil, ErrFolderDoesNotExist
 	}
+
+	folder := node.Folder
 
 	if folder.OrgId != orgID {
 		return nil, ErrFolderDoesNotExistInOrg
