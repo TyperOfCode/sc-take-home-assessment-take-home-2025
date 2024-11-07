@@ -1,6 +1,8 @@
 package folder
 
 import (
+	"errors"
+
 	"github.com/gofrs/uuid"
 )
 
@@ -11,8 +13,8 @@ func GetAllFolders() []Folder {
 func (f *driver) GetFoldersByOrgID(orgID uuid.UUID) []Folder {
 
 	res := []Folder{}
-	for _, v := range f.nameToNode {
-		f := v.Folder
+	for _, names := range f.folderNames {
+		f := f.nameToNode[names].Folder
 
 		if f.OrgId == orgID {
 			res = append(res, *f)
@@ -24,38 +26,31 @@ func (f *driver) GetFoldersByOrgID(orgID uuid.UUID) []Folder {
 }
 
 func (f *driver) GetAllChildFolders(orgID uuid.UUID, name string) ([]Folder, error) {
-	// folders := f.folders
 
-	// // (assuming all the folder names are unique)
-	// // finds the folder path with matching name and orgid.
-	// path := ""
-	// folderExists := false
-	// for _, f := range folders {
-	// 	if f.Name == name {
-	// 		folderExists = true
+	node, folderExists := f.nameToNode[name]
+	folder := node.Folder
 
-	// 		if f.OrgId == orgID {
-	// 			path = f.Paths
-	// 		}
-	// 		break
-	// 	}
-	// }
+	if !folderExists {
+		return nil, errors.New("folder doesn't exist")
+	}
 
-	// if !folderExists {
-	// 	return nil, errors.New("folder doesn't exist")
-	// }
+	if folder.OrgId != orgID {
+		return nil, errors.New("folder doesn't exist in the specified organization")
+	}
 
-	// if path == "" {
-	// 	return nil, errors.New("folder doesn't exist in the specified organization")
-	// }
+	res := []Folder{}
+	getDescendants(&res, node, orgID)
 
-	// // finds all the children/descendants of parent, ignoring the parent.
-	// res := []Folder{}
-	// for _, f := range folders {
-	// 	if f.OrgId == orgID && strings.HasPrefix(f.Paths, path) && f.Paths != path {
-	// 		res = append(res, f)
-	// 	}
-	// }
+	return res, nil
+}
 
-	return []Folder{}, nil
+// adds all descendants of node to res
+func getDescendants(res *[]Folder, node *FolderNode, orgID uuid.UUID) {
+	for _, child := range node.Children {
+		if child.Folder.OrgId == orgID {
+			*res = append(*res, *child.Folder)
+		}
+
+		getDescendants(res, child, orgID)
+	}
 }

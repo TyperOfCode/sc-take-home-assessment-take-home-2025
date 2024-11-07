@@ -17,18 +17,23 @@ type IDriver interface {
 }
 
 type driver struct {
-	nameToNode map[string]*FolderNode
+	folderNames []string
+	nameToNode  map[string]*FolderNode
 }
 
 func NewDriver(folders []Folder) IDriver {
+	var folderNames []string
+	for _, folder := range folders {
+		folderNames = append(folderNames, folder.Name)
+	}
 
-	nameToNode, err := BuildFolderTree(folders)
+	nameToNode, err := BuildFolderTree(folders, folderNames)
 	if err != nil {
 		panic(err)
 	}
 
 	return &driver{
-		// initialize attributes here
-		nameToNode: nameToNode,
+		folderNames: folderNames,
+		nameToNode:  nameToNode,
 	}
 }
