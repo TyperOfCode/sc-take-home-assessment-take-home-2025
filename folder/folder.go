@@ -17,17 +17,18 @@ type IDriver interface {
 }
 
 type driver struct {
-	// define attributes here
-	// data structure to store folders
-	// or preprocessed data
-
-	// example: feel free to change the data structure, if slice is not what you want
-	folders []Folder
+	nameToNode map[string]*FolderNode
 }
 
 func NewDriver(folders []Folder) IDriver {
+
+	nameToNode, err := BuildFolderTree(folders)
+	if err != nil {
+		panic(err)
+	}
+
 	return &driver{
 		// initialize attributes here
-		folders: folders,
+		nameToNode: nameToNode,
 	}
 }
