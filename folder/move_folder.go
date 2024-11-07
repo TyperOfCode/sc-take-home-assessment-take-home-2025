@@ -4,7 +4,7 @@ import (
 	"strings"
 )
 
-func (f *driver) MoveFolder(
+func (d *driver) MoveFolder(
 	name string,
 	dst string,
 ) ([]Folder, error) {
@@ -17,8 +17,8 @@ func (f *driver) MoveFolder(
 		return nil, ErrMoveToSource
 	}
 
-	srcNode, srcExists := f.nameToNode[name]
-	dstNode, dstExists := f.nameToNode[dst]
+	srcNode, srcExists := d.nameToNode[name]
+	dstNode, dstExists := d.nameToNode[dst]
 
 	if !srcExists {
 		return nil, ErrSourceDoesNotExist
@@ -41,8 +41,8 @@ func (f *driver) MoveFolder(
 	// Copy all the folders and update the necessary paths.
 	// O(n) complexity as we have to return a copy of all the folders anyway.
 	res := []Folder{}
-	for _, names := range f.folderNames {
-		node, ok := f.nameToNode[names]
+	for _, names := range d.folderNames {
+		node, ok := d.nameToNode[names]
 		if !ok {
 			return nil, ErrUnexpectedError
 		}

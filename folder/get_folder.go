@@ -4,24 +4,23 @@ import (
 	"github.com/gofrs/uuid"
 )
 
-
 func GetAllFolders() []Folder {
 	return GetSampleData()
 }
 
-func (f *driver) GetFoldersByOrgID(orgID uuid.UUID) ([]Folder, error) {
-
+func (d *driver) GetFoldersByOrgID(orgID uuid.UUID) ([]Folder, error) {
+	
 	res := []Folder{}
-	for _, names := range f.folderNames {
-		node, ok := f.nameToNode[names]
+	for _, names := range d.folderNames {
+		node, ok := d.nameToNode[names]
 		if !ok {
 			return nil, ErrUnexpectedError
 		}
 
-		f := node.Folder
+		folder := node.Folder
 
-		if f.OrgId == orgID {
-			res = append(res, *f)
+		if folder.OrgId == orgID {
+			res = append(res, *folder)
 		}
 	}
 
@@ -29,9 +28,9 @@ func (f *driver) GetFoldersByOrgID(orgID uuid.UUID) ([]Folder, error) {
 
 }
 
-func (f *driver) GetAllChildFolders(orgID uuid.UUID, name string) ([]Folder, error) {
+func (d *driver) GetAllChildFolders(orgID uuid.UUID, name string) ([]Folder, error) {
 
-	node, folderExists := f.nameToNode[name]
+	node, folderExists := d.nameToNode[name]
 	folder := node.Folder
 
 	if !folderExists {
