@@ -11,7 +11,7 @@ import (
 func Test_folder_GetFoldersByOrgID(t *testing.T) {
 	t.Parallel()
 
-	orgIdToFetch := uuid.Must(uuid.NewV4())
+	orgIdToFetch := uuid.FromStringOrNil(folder.DefaultOrgID)
 	orgId1 := uuid.Must(uuid.NewV4())
 	orgId2 := uuid.Must(uuid.NewV4())
 	orgId3 := uuid.Must(uuid.NewV4())
@@ -105,7 +105,7 @@ func Test_folder_GetFoldersByOrgID(t *testing.T) {
 func Test_folder_GetAllChildFolders(t *testing.T) {
 	t.Parallel()
 
-	orgIdToFetch := uuid.Must(uuid.NewV4())
+	orgIdToFetch := uuid.FromStringOrNil(folder.DefaultOrgID)
 	orgId1 := uuid.Must(uuid.NewV4())
 
 	tests := [...]struct {
@@ -194,7 +194,7 @@ func Test_folder_GetAllChildFolders(t *testing.T) {
 		},
 
 		{
-			testName:   "Fetches all descendents, not just children.",
+			testName:   "Fetches all descendants, not just children.",
 			orgID:      orgIdToFetch,
 			folderName: "a",
 			folders: []folder.Folder{
@@ -212,7 +212,7 @@ func Test_folder_GetAllChildFolders(t *testing.T) {
 		},
 
 		{
-			testName:   "Fetches all descendents, not just children, non-root.",
+			testName:   "Fetches all descendants, not just children, non-root.",
 			orgID:      orgIdToFetch,
 			folderName: "a",
 			folders: []folder.Folder{
@@ -231,7 +231,7 @@ func Test_folder_GetAllChildFolders(t *testing.T) {
 		},
 
 		{
-			testName:   "Fetches all descendents, not just children, mixed orgIDs.",
+			testName:   "Fetches all descendants, not just children, mixed orgIDs.",
 			orgID:      orgIdToFetch,
 			folderName: "a",
 			folders: []folder.Folder{
