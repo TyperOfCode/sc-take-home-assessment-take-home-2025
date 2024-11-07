@@ -228,7 +228,8 @@ func Test_folder_MoveFolder(t *testing.T) {
 		t.Run(tc.testName, func(t *testing.T) {
 			t.Parallel()
 
-			f := folder.NewDriver(tc.folders)
+			f, err := folder.NewDriver(tc.folders)
+			assert.NoError(t, err, "unexpected error")
 
 			result, err := f.MoveFolder(tc.src, tc.dst)
 

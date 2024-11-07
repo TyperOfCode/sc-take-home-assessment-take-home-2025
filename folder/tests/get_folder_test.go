@@ -99,7 +99,8 @@ func Test_folder_GetFoldersByOrgID(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			f := folder.NewDriver(tc.folders)
+			f, err := folder.NewDriver(tc.folders)
+			assert.NoError(t, err, "unexpected error")
 
 			result, err := f.GetFoldersByOrgID(tc.orgID)
 
@@ -330,7 +331,8 @@ func Test_folder_GetAllChildFolders(t *testing.T) {
 		t.Run(tc.testName, func(t *testing.T) {
 			t.Parallel()
 
-			f := folder.NewDriver(tc.folders)
+			f, err := folder.NewDriver(tc.folders)
+			assert.NoError(t, err, "unexpected error")
 
 			result, err := f.GetAllChildFolders(tc.orgID, tc.folderName)
 

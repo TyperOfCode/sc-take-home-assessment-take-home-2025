@@ -26,7 +26,7 @@ type driver struct {
 	nameToNode  map[string]*FolderNode
 }
 
-func NewDriver(folders []Folder) IDriver {
+func NewDriver(folders []Folder) (IDriver, error) {
 	var folderNames []string
 	for _, folder := range folders {
 		folderNames = append(folderNames, folder.Name)
@@ -34,11 +34,11 @@ func NewDriver(folders []Folder) IDriver {
 
 	nameToNode, err := BuildFolderTree(folders, folderNames)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	return &driver{
 		folderNames: folderNames,
 		nameToNode:  nameToNode,
-	}
+	}, nil
 }
