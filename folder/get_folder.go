@@ -6,6 +6,10 @@ import (
 	"github.com/gofrs/uuid"
 )
 
+// errors
+var ErrFolderDoesNotExist = errors.New("folder doesn't exist")
+var ErrFolderDoesNotExistInOrg = errors.New("folder doesn't exist in the specified organization")
+
 func GetAllFolders() []Folder {
 	return GetSampleData()
 }
@@ -31,11 +35,11 @@ func (f *driver) GetAllChildFolders(orgID uuid.UUID, name string) ([]Folder, err
 	folder := node.Folder
 
 	if !folderExists {
-		return nil, errors.New("folder doesn't exist")
+		return nil, ErrFolderDoesNotExist
 	}
 
 	if folder.OrgId != orgID {
-		return nil, errors.New("folder doesn't exist in the specified organization")
+		return nil, ErrFolderDoesNotExistInOrg
 	}
 
 	res := []Folder{}

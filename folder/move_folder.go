@@ -5,38 +5,48 @@ import (
 	"strings"
 )
 
+// errors
+var ErrInvalidArguments = errors.New("empty folder name in source or destination")
+var ErrMoveToSource = errors.New("cannot move a folder to itself")
+var ErrMoveToDescendant = errors.New("cannot move a folder to its descendant")
+var ErrMoveToDifferentOrg = errors.New("cannot move a folder to a different organization")
+
+var ErrSourceDoesNotExist = errors.New("source folder doesn't exist")
+var ErrDestDoesNotExist = errors.New("destination folder doesn't exist")
+
+
 func (f *driver) MoveFolder(
 	name string,
 	dst string,
 ) ([]Folder, error) {
 
 	if name == "" || dst == "" {
-		return nil, errors.New("empty folder name in source or destination")
+		return nil, ErrInvalidArguments
 	}
 
 	if name == dst {
-		return nil, errors.New("cannot move a folder to itself")
+		return nil, ErrMoveToSource
 	}
 
 	srcNode, srcExists := f.nameToNode[name]
 	dstNode, dstExists := f.nameToNode[dst]
 
 	if !srcExists {
-		return nil, errors.New("source folder doesn't exist")
+		return nil, ErrSourceDoesNotExist
 	}
 
 	if !dstExists {
-		return nil, errors.New("destination folder doesn't exist")
+		return nil, ErrDestDoesNotExist
 	}
 
 	srcFolder, dstFolder := srcNode.Folder, dstNode.Folder
 
 	if srcFolder.OrgId != dstFolder.OrgId {
-		return nil, errors.New("cannot move a folder to a different organization")
+		return nil, ErrMoveToDifferentOrg
 	}
 
 	if strings.HasPrefix(dstFolder.Paths, srcFolder.Paths) {
-		return nil, errors.New("cannot move a folder to its descendant")
+		return nil, ErrMoveToDescendant
 	}
 
 	// Copy all the folders and update the necessary paths.
