@@ -1,70 +1,63 @@
 package folder
 
-func (f *driver) MoveFolder(name string, dst string) ([]Folder, error) {
+import (
+	"errors"
+	"strings"
+)
 
-	// if name == "" || dst == "" {
-	// 	return nil, errors.New("empty folder name in source or destination")
-	// }
+func (f *driver) MoveFolder(
+	name string,
+	dst string,
+) ([]Folder, error) {
 
-	// if name == dst {
-	// 	return nil, errors.New("cannot move a folder to itself")
-	// }
+	if name == "" || dst == "" {
+		return nil, errors.New("empty folder name in source or destination")
+	}
 
-	// folders := f.folders
+	if name == dst {
+		return nil, errors.New("cannot move a folder to itself")
+	}
 
-	// // find source & dstFolder folder
-	// srcFolder := Folder{}
-	// dstFolder := Folder{}
-	// for _, f := range folders {
-	// 	if f.Name == name {
-	// 		srcFolder = f
-	// 	}
+	srcNode, srcExists := f.nameToNode[name]
+	dstNode, dstExists := f.nameToNode[dst]
 
-	// 	if f.Name == dst {
-	// 		dstFolder = f
-	// 	}
+	if !srcExists {
+		return nil, errors.New("source folder doesn't exist")
+	}
 
-	// 	if srcFolder.Name != "" && dstFolder.Name != "" {
-	// 		break
-	// 	}
-	// }
+	if !dstExists {
+		return nil, errors.New("destination folder doesn't exist")
+	}
 
-	// if srcFolder.Name == "" {
-	// 	return nil, errors.New("source folder doesn't exist")
-	// }
+	srcFolder, dstFolder := srcNode.Folder, dstNode.Folder
 
-	// if dstFolder.Name == "" {
-	// 	return nil, errors.New("destination folder doesn't exist")
-	// }
+	if srcFolder.OrgId != dstFolder.OrgId {
+		return nil, errors.New("cannot move a folder to a different organization")
+	}
 
-	// if srcFolder.OrgId != dstFolder.OrgId {
-	// 	return nil, errors.New("cannot move a folder to a different organization")
-	// }
+	if strings.HasPrefix(dstFolder.Paths, srcFolder.Paths) {
+		return nil, errors.New("cannot move a folder to its descendant")
+	}
 
-	// children, err := f.GetAllChildFolders(srcFolder.OrgId, srcFolder.Name)
-	// if err != nil {
-	// 	return nil, err
-	// }
+	// Copy all the folders and update the necessary paths.
+	// O(n) complexity as we have to return a copy of all the folders anyway.
+	res := []Folder{}
+	for _, names := range f.folderNames {
+		node, ok := f.nameToNode[names]
+		if !ok {
+			continue
+		}
 
-	// // check if dstFolder is a child of srcFolder
-	// for _, c := range children {
-	// 	if c.Name == dstFolder.Name {
-	// 		return nil, errors.New("cannot move a folder to a child of itself")
-	// 	}
-	// }
+		folder := *node.Folder
 
-	// // move folders and update children paths
-	// res := []Folder{}
+		if folder.Paths == srcFolder.Paths {
+			folder.Paths = dstFolder.Paths + "." + folder.Name
+		} else if strings.HasPrefix(folder.Paths, srcFolder.Paths) {
+			folder.Paths = dstFolder.Paths + "." + srcFolder.Name + folder.Paths[len(srcFolder.Paths):]
+		}
 
-	// for _, f := range folders {
-	// 	if f.Paths == srcFolder.Paths {
-	// 		f.Paths = dstFolder.Paths + "." + f.Name
-	// 	} else if strings.HasPrefix(f.Paths, srcFolder.Paths) {
-	// 		f.Paths = dstFolder.Paths + "." + srcFolder.Name + f.Paths[len(srcFolder.Paths):]
-	// 	}
+		res = append(res, folder)
+	}
 
-	// 	res = append(res, f)
-	// }
-
-	return []Folder{}, nil
+	return res, nil
 }
