@@ -116,6 +116,25 @@ func Test_folder_MoveFolder(t *testing.T) {
 			expectError: false,
 		},
 
+		{
+			testName: "Shouldn't match with subset of folder name",
+			src:      "alp",
+			dst:      "beta",
+			folders: []folder.Folder{
+				{Name: "alpha", OrgId: orgId1, Paths: "alpha"},
+				{Name: "alp", OrgId: orgId1, Paths: "alp"},
+				{Name: "betaone", OrgId: orgId1, Paths: "alpha.beta.betaone"},
+				{Name: "beta", OrgId: orgId1, Paths: "alpha.beta"},
+			},
+			expect: []folder.Folder{
+				{Name: "alpha", OrgId: orgId1, Paths: "alpha"},
+				{Name: "alp", OrgId: orgId1, Paths: "alpha.beta.alp"},
+				{Name: "betaone", OrgId: orgId1, Paths: "alpha.beta.betaone"},
+				{Name: "beta", OrgId: orgId1, Paths: "alpha.beta"},
+			},
+			expectError: false,
+		},
+
 		//-------- errorful cases
 
 		{
@@ -236,6 +255,8 @@ func Test_folder_MoveFolder(t *testing.T) {
 			if tc.expectError {
 				assert.Error(t, err, "expected error")
 				return
+			} else {
+				assert.NoError(t, err, "unexpected error")
 			}
 
 			assert.Equal(t, tc.expect, result, "unexpected result")

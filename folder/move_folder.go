@@ -8,7 +8,6 @@ func (d *driver) MoveFolder(
 	name string,
 	dst string,
 ) ([]Folder, error) {
-
 	if name == "" || dst == "" {
 		return nil, ErrInvalidArguments
 	}
@@ -38,10 +37,20 @@ func (d *driver) MoveFolder(
 		return nil, ErrMoveToDescendant
 	}
 
-	// Copy all the folders and update the necessary paths.
-	// O(n) complexity as we have to return a copy of all the folders anyway.
+	res, err := moveFolderAndChildren(d, srcFolder, dstFolder)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+// Copy all the folders and update the necessary paths to move a folder.
+// O(n) complexity as we have to return a copy of all the folders anyway.
+func moveFolderAndChildren(d *driver, srcFolder *Folder, dstFolder *Folder) ([]Folder, error) {
 	res := []Folder{}
 	newPrefix := dstFolder.Paths + "." + srcFolder.Name
+
 	for _, names := range d.folderNames {
 		node, ok := d.nameToNode[names]
 		if !ok {
@@ -62,6 +71,7 @@ func (d *driver) MoveFolder(
 	return res, nil
 }
 
+// determines if childPath is a descendant of parentPath
 func isDescendant(
 	parentPath string,
 	childPath string,

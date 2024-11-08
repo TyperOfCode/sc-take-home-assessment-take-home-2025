@@ -154,6 +154,20 @@ func Test_folder_GetAllChildFolders(t *testing.T) {
 		},
 
 		{
+			testName:   "Shouldnt match with subset of folder name.",
+			orgID:      orgIdToFetch,
+			folderName: "alp",
+			folders: []folder.Folder{
+				{Name: "alpha", OrgId: orgIdToFetch, Paths: "alpha"},
+				{Name: "beta", OrgId: orgId1, Paths: "alpha.beta"},
+				{Name: "c", OrgId: orgId1, Paths: "alpha.c"},
+				{Name: "alp", OrgId: orgIdToFetch, Paths: "alp"},
+			},
+			expect:      []folder.Folder{},
+			expectError: false,
+		},
+
+		{
 			testName:   "Fetches all direct children of the folder.",
 			orgID:      orgIdToFetch,
 			folderName: "alpha",
@@ -339,6 +353,8 @@ func Test_folder_GetAllChildFolders(t *testing.T) {
 			if tc.expectError {
 				assert.Error(t, err, "expected error")
 				return
+			} else {
+				assert.NoError(t, err, "unexpected error")
 			}
 
 			assert.Equal(t, tc.expect, result, "unexpected result")
