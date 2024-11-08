@@ -51,8 +51,10 @@ func moveFolderAndChildren(d *driver, srcFolder *Folder, dstFolder *Folder) ([]F
 	res := []Folder{}
 	newPrefix := dstFolder.Paths + "." + srcFolder.Name
 
-	for _, names := range d.folderNames {
-		node, ok := d.nameToNode[names]
+	srcSegments := strings.Split(srcFolder.Paths, ".")
+
+	for _, name := range d.folderNames {
+		node, ok := d.nameToNode[name]
 		if !ok {
 			return nil, ErrUnexpectedError
 		}
@@ -62,7 +64,9 @@ func moveFolderAndChildren(d *driver, srcFolder *Folder, dstFolder *Folder) ([]F
 		if folder.Paths == srcFolder.Paths {
 			folder.Paths = newPrefix
 		} else if isDescendant(srcFolder.Paths, folder.Paths) {
-			folder.Paths = newPrefix + folder.Paths[len(srcFolder.Paths):]
+			folderSegments := strings.Split(folder.Paths, ".")
+
+			folder.Paths = newPrefix + "." + strings.Join(folderSegments[len(srcSegments):], ".")
 		}
 
 		res = append(res, folder)

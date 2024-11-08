@@ -10,8 +10,8 @@ func GetAllFolders() []Folder {
 
 func (d *driver) GetFoldersByOrgID(orgID uuid.UUID) ([]Folder, error) {
 	res := []Folder{}
-	for _, names := range d.folderNames {
-		node, ok := d.nameToNode[names]
+	for _, name := range d.folderNames {
+		node, ok := d.nameToNode[name]
 		if !ok {
 			return nil, ErrUnexpectedError
 		}
